@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Message, UserRole } from '@/types';
+import { Message } from '@/types';
 import { getMessagesByLoan, sendMessage } from '@/lib/firestore';
 import { MessageSquare, Send, X } from 'lucide-react';
 
 interface LoanCardProps {
   loanId: string;
-  userRole: UserRole;
 }
 
-export default function LoanCard({ loanId, userRole }: LoanCardProps) {
+export default function LoanCard({ loanId }: LoanCardProps) {
   const { user } = useAuth();
   const [showMessages, setShowMessages] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);

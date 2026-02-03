@@ -270,7 +270,7 @@ export default function LenderDashboard() {
                     </div>
                   )}
 
-                  <LoanCard loanId={loan.id} userRole="lender" />
+                  <LoanCard loanId={loan.id} />
                 </div>
               ))}
             </div>

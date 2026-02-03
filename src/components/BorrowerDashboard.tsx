@@ -235,7 +235,7 @@ export default function BorrowerDashboard() {
                     </button>
                   )}
 
-                  <LoanCard loanId={loan.id} userRole="borrower" />
+                  <LoanCard loanId={loan.id} />
                 </div>
               ))}
             </div>

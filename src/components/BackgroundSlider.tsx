@@ -11,7 +11,6 @@ const backgroundImages = [
 
 export default function BackgroundSlider() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,7 +41,6 @@ export default function BackgroundSlider() {
             backgroundPosition: 'center',
             zIndex: 0,
           }}
-          onLoad={() => index === 0 && setIsLoaded(true)}
         >
           {/* Dark overlay for better text contrast */}
           <div className="absolute inset-0 bg-black bg-opacity-50" />

@@ -61,10 +61,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const result = await signInWithPopup(auth, provider);
       const firebaseUser = result.user;
       
+      console.log('Google sign-in successful, checking Firestore...');
+      
       // Check if user exists in Firestore
       let userData = await getUserByUid(firebaseUser.uid);
       
       if (!userData) {
+        console.log('Creating new user in Firestore...');
         // Create new user
         const newUser: Omit<User, 'createdAt'> = {
           uid: firebaseUser.uid,
@@ -74,14 +77,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
           role: role,
         };
         
-        await createUser(newUser);
-        userData = await getUserByUid(firebaseUser.uid);
+        try {
+          await createUser(newUser);
+          console.log('User created successfully');
+          userData = await getUserByUid(firebaseUser.uid);
+        } catch (createError: any) {
+          console.error('Error creating user:', createError);
+          throw new Error('Failed to create user account. Please check Firestore permissions.');
+        }
       } else if (userData.role !== role) {
+        console.log('Updating user role...');
         // Update role if user selected a different one
         await updateUser(firebaseUser.uid, { role });
         userData = { ...userData, role };
       }
       
+      console.log('Authentication complete:', userData);
       setUser(userData);
     } catch (error: any) {
       console.error('Error signing in with Google:', error);
@@ -90,6 +101,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
         // User closed popup, don't show error
         return;
+      } else if (error.message?.includes('Firestore')) {
+        alert('Database error: ' + error.message);
       }
       throw error;
     }

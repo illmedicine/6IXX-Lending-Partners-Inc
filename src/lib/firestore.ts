@@ -8,9 +8,7 @@ import {
   query, 
   where, 
   orderBy, 
-  Timestamp,
-  DocumentData,
-  QueryDocumentSnapshot
+  Timestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { LoanRequest, Message, User, LoanStatus, CollateralType } from '@/types';

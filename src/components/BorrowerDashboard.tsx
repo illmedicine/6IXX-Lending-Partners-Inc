@@ -5,7 +5,6 @@ import { getLoansByBorrower, submitCollateral } from '@/lib/firestore';
 import LoanPackageSelector from '@/components/LoanPackageSelector';
 import CollateralSelector from '@/components/CollateralSelector';
 import LoanCard from '@/components/LoanCard';
-import { MessageSquare } from 'lucide-react';
 
 export default function BorrowerDashboard() {
   const { user, signOut } = useAuth();

@@ -9,7 +9,7 @@ interface LoanCardProps {
   userRole: UserRole;
 }
 
-export default function LoanCard({ loanId, userRole }: LoanCardProps) {
+export default function LoanCard({ loan }: LoanCardProps) {
   const { user } = useAuth();
   const [showMessages, setShowMessages] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);

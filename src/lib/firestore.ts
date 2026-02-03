@@ -81,25 +81,54 @@ export async function getLoanRequest(loanId: string): Promise<LoanRequest | null
 }
 
 export async function getLoansByBorrower(borrowerId: string): Promise<LoanRequest[]> {
-  const q = query(
-    collection(db, 'loans'), 
-    where('borrowerId', '==', borrowerId),
-    orderBy('requestedAt', 'desc')
-  );
-  const snapshot = await getDocs(q);
-  
-  return snapshot.docs.map(doc => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      requestedAt: convertTimestamp(data.requestedAt),
-      updatedAt: convertTimestamp(data.updatedAt),
-      approvedAt: data.approvedAt ? convertTimestamp(data.approvedAt) : undefined,
-      rejectedAt: data.rejectedAt ? convertTimestamp(data.rejectedAt) : undefined,
-      collateralRequestedAt: data.collateralRequestedAt ? convertTimestamp(data.collateralRequestedAt) : undefined,
-    } as LoanRequest;
-  });
+  try {
+    const q = query(
+      collection(db, 'loans'), 
+      where('borrowerId', '==', borrowerId),
+      orderBy('requestedAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        requestedAt: convertTimestamp(data.requestedAt),
+        updatedAt: convertTimestamp(data.updatedAt),
+        approvedAt: data.approvedAt ? convertTimestamp(data.approvedAt) : undefined,
+        rejectedAt: data.rejectedAt ? convertTimestamp(data.rejectedAt) : undefined,
+        collateralRequestedAt: data.collateralRequestedAt ? convertTimestamp(data.collateralRequestedAt) : undefined,
+      } as LoanRequest;
+    });
+  } catch (error: any) {
+    // If index doesn't exist, fall back to query without orderBy
+    if (error.message?.includes('index') || error.code === 'failed-precondition') {
+      console.warn('Composite index not found, using simple query. Loans may not be sorted.');
+      const q = query(
+        collection(db, 'loans'), 
+        where('borrowerId', '==', borrowerId)
+      );
+      const snapshot = await getDocs(q);
+      
+      const loans = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          requestedAt: convertTimestamp(data.requestedAt),
+          updatedAt: convertTimestamp(data.updatedAt),
+          approvedAt: data.approvedAt ? convertTimestamp(data.approvedAt) : undefined,
+          rejectedAt: data.rejectedAt ? convertTimestamp(data.rejectedAt) : undefined,
+          collateralRequestedAt: data.collateralRequestedAt ? convertTimestamp(data.collateralRequestedAt) : undefined,
+        } as LoanRequest;
+      });
+      
+      // Sort manually in JavaScript
+      return loans.sort((a, b) => b.requestedAt.getTime() - a.requestedAt.getTime());
+    }
+    throw error;
+  }
 }
 
 export async function getAllLoans(): Promise<LoanRequest[]> {

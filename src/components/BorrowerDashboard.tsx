@@ -28,10 +28,16 @@ export default function BorrowerDashboard() {
     
     setLoading(true);
     try {
+      console.log('Loading loans for borrower:', user.uid);
       const userLoans = await getLoansByBorrower(user.uid);
+      console.log('Loaded loans:', userLoans);
       setLoans(userLoans);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading loans:', error);
+      if (error.message?.includes('index')) {
+        console.error('Firestore index required. Creating index...');
+        alert('Setting up database. Please wait a moment and refresh the page.');
+      }
     } finally {
       setLoading(false);
     }
@@ -44,8 +50,9 @@ export default function BorrowerDashboard() {
     }
 
     try {
+      console.log('Submitting loan request...');
       const { submitLoanRequest } = await import('@/lib/loanService');
-      await submitLoanRequest({
+      const loanId = await submitLoanRequest({
         borrowerId: user.uid,
         borrowerName: user.displayName,
         borrowerEmail: user.email,
@@ -55,13 +62,18 @@ export default function BorrowerDashboard() {
         totalRepayment: selectedLoan.totalRepayment,
       });
 
+      console.log('Loan request created with ID:', loanId);
       alert('Loan request submitted successfully!');
       setShowRequestForm(false);
       setSelectedLoan(null);
-      loadLoans();
-    } catch (error) {
+      
+      // Wait a moment for Firestore to sync, then reload
+      setTimeout(() => {
+        loadLoans();
+      }, 1000);
+    } catch (error: any) {
       console.error('Error submitting loan request:', error);
-      alert('An error occurred. Please try again.');
+      alert('An error occurred: ' + (error.message || 'Please try again.'));
     }
   };
 

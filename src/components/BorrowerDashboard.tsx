@@ -48,12 +48,21 @@ export default function BorrowerDashboard() {
   };
 
   const handleSubmitLoanRequest = async (skipDisclosure = false) => {
+    console.log('handleSubmitLoanRequest called', { 
+      skipDisclosure, 
+      selectedLoan, 
+      phoneNumber, 
+      user: !!user,
+      disclosureAccepted 
+    });
+    
     if (!selectedLoan || !phoneNumber.trim() || !user) {
       alert('Please select a loan package and provide your phone number');
       return;
     }
 
     if (!skipDisclosure && !disclosureAccepted) {
+      console.log('Showing disclosure modal');
       setShowDisclosure(true);
       return;
     }
@@ -63,8 +72,8 @@ export default function BorrowerDashboard() {
       const { submitLoanRequest } = await import('@/lib/loanService');
       const loanId = await submitLoanRequest({
         borrowerId: user.uid,
-        borrowerName: user.displayName,
-        borrowerEmail: user.email,
+        borrowerName: user.displayName || '',
+        borrowerEmail: user.email || '',
         borrowerPhone: phoneNumber,
         amount: selectedLoan.amount,
         interestRate: selectedLoan.interestRate,

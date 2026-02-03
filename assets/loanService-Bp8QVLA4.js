@@ -1,1 +1,0 @@
-import{c as a,h as e,f as r}from"./index-BR4HpAmr.js";async function s(o){try{const t=await a({...o,status:"pending"});try{await e(r,"sendLoanNotification")({loanId:t,...o})}catch(n){console.warn("Notification sending failed, but loan was created:",n)}return t}catch(t){throw console.error("Error submitting loan request:",t),t}}export{s as submitLoanRequest};

@@ -5,12 +5,15 @@ import { getLoansByBorrower, submitCollateral } from '@/lib/firestore';
 import LoanPackageSelector from '@/components/LoanPackageSelector';
 import CollateralSelector from '@/components/CollateralSelector';
 import LoanCard from '@/components/LoanCard';
+import DisclosureModal from '@/components/DisclosureModal';
 
 export default function BorrowerDashboard() {
   const { user, signOut } = useAuth();
   const [loans, setLoans] = useState<LoanRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showRequestForm, setShowRequestForm] = useState(false);
+  const [showDisclosure, setShowDisclosure] = useState(false);
+  const [disclosureAccepted, setDisclosureAccepted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || '');
   const [selectedLoan, setSelectedLoan] = useState<{
     amount: number;
@@ -49,6 +52,11 @@ export default function BorrowerDashboard() {
       return;
     }
 
+    if (!disclosureAccepted) {
+      setShowDisclosure(true);
+      return;
+    }
+
     try {
       console.log('Submitting loan request...');
       const { submitLoanRequest } = await import('@/lib/loanService');
@@ -66,6 +74,7 @@ export default function BorrowerDashboard() {
       alert(`Loan request submitted successfully!\n\nYour Loan ID: ${loanId.substring(0, 8).toUpperCase()}\n\nSave this ID for reference.`);
       setShowRequestForm(false);
       setSelectedLoan(null);
+      setDisclosureAccepted(false);
       
       // Wait a moment for Firestore to sync, then reload
       setTimeout(() => {
@@ -75,6 +84,13 @@ export default function BorrowerDashboard() {
       console.error('Error submitting loan request:', error);
       alert('An error occurred: ' + (error.message || 'Please try again.'));
     }
+  };
+
+  const handleDisclosureAccept = () => {
+    setDisclosureAccepted(true);
+    setShowDisclosure(false);
+    // Automatically proceed with submission after acceptance
+    setTimeout(() => handleSubmitLoanRequest(), 100);
   };
 
   const handleSubmitCollateral = async (collateralType: any, details: string) => {
@@ -271,6 +287,13 @@ export default function BorrowerDashboard() {
           </div>
         </div>
       )}
+
+      {/* Disclosure Modal */}
+      <DisclosureModal
+        isOpen={showDisclosure}
+        onClose={() => setShowDisclosure(false)}
+        onAccept={handleDisclosureAccept}
+      />
     </div>
   );
 }

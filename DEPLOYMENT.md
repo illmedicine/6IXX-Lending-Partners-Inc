@@ -1,6 +1,184 @@
-# Deployment Guide
+# Deployment Guide - GitHub Pages
 
-## 🚀 Deploy to Vercel (Recommended)
+## 🚀 Deploy to GitHub Pages (Static Hosting)
+
+This application is now configured to deploy to GitHub Pages as a static React app.
+
+### Prerequisites:
+- GitHub repository set up
+- Firebase project configured
+- Node.js 18+ installed
+
+### Step-by-Step Deployment:
+
+#### 1. **Set Up Environment Variables**
+
+Create a `.env` file in the root directory:
+
+```bash
+cp .env.example .env
+```
+
+Fill in your Firebase credentials:
+
+```env
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+#### 2. **Install Dependencies**
+
+```bash
+npm install
+```
+
+#### 3. **Test Locally**
+
+```bash
+npm run dev
+```
+
+Visit http://localhost:5173 to test the app.
+
+#### 4. **Deploy to GitHub Pages**
+
+```bash
+npm run deploy
+```
+
+This command will:
+- Build the production bundle
+- Deploy to GitHub Pages automatically
+- Your app will be live at: `https://[username].github.io/6IXX-Lending-Partners-Inc/`
+
+#### 5. **Configure GitHub Pages**
+
+1. Go to your repository on GitHub
+2. Settings → Pages
+3. Source should be set to: `gh-pages` branch
+4. Wait a few minutes for deployment
+
+#### 6. **Update Firebase Authorized Domains**
+
+1. Go to Firebase Console → Authentication → Settings
+2. Add your GitHub Pages domain:
+   - `[username].github.io`
+3. Save changes
+
+### 🔧 Firebase Cloud Functions (For SMS Notifications)
+
+To enable SMS notifications to the lender:
+
+#### 1. **Initialize Firebase Functions**
+
+```bash
+cd functions
+npm install
+cd ..
+firebase init functions
+```
+
+#### 2. **Configure Environment Variables**
+
+```bash
+firebase functions:config:set \
+  google.calendar_id="your_calendar_id" \
+  google.service_email="service@project.iam.gserviceaccount.com" \
+  google.private_key="-----BEGIN PRIVATE KEY-----..." \
+  twilio.account_sid="your_twilio_sid" \
+  twilio.auth_token="your_twilio_token" \
+  twilio.phone_number="+1234567890" \
+  lender.phone_number="+17245587342"
+```
+
+#### 3. **Deploy Functions**
+
+```bash
+firebase deploy --only functions
+```
+
+---
+
+## 🌐 Alternative: Deploy to Netlify
+
+If you prefer Netlify over GitHub Pages:
+
+1. **Connect Repository**
+   - Go to https://netlify.com
+   - Click "New site from Git"
+   - Select your repository
+
+2. **Configure Build Settings**
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+   - Add environment variables from `.env`
+
+3. **Deploy**
+   - Click "Deploy site"
+   - Get your URL: `your-app.netlify.app`
+
+---
+
+## 📱 Post-Deployment Checklist
+
+- [ ] App loads at GitHub Pages URL
+- [ ] Google sign-in works
+- [ ] Can create loan requests
+- [ ] Can view dashboards (borrower/lender)
+- [ ] Messaging system works
+- [ ] Collateral submission works
+- [ ] Firebase authorized domain added
+- [ ] Cloud Functions deployed (optional)
+
+---
+
+## 🐛 Troubleshooting
+
+### "Blank page after deployment"
+- Check browser console for errors
+- Verify `base` path in `vite.config.ts` matches your repo name
+- Ensure all environment variables are set
+
+### "Firebase auth not working"
+- Add GitHub Pages domain to Firebase authorized domains
+- Check that environment variables are correct
+- Verify Firebase project is active
+
+### "404 errors on page refresh"
+- GitHub Pages doesn't support client-side routing perfectly
+- Use hash router or configure 404.html redirect
+
+---
+
+## 🔄 Update Deployment
+
+To update your deployed app:
+
+```bash
+# Make changes to your code
+git add .
+git commit -m "Your changes"
+git push origin main
+
+# Redeploy to GitHub Pages
+npm run deploy
+```
+
+---
+
+## 📊 Monitoring
+
+- **GitHub Pages Status**: Check repo Settings → Pages
+- **Firebase Console**: Monitor authentication and database
+- **Browser DevTools**: Check for console errors
+
+---
+
+Your app is now live on GitHub Pages! 🎉
 
 Vercel is the easiest way to deploy Next.js apps and it's made by the Next.js team.
 

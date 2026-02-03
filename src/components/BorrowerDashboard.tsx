@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoanRequest } from '@/types';
@@ -41,31 +39,27 @@ export default function BorrowerDashboard() {
   };
 
   const handleSubmitLoanRequest = async () => {
-    if (!selectedLoan || !phoneNumber.trim()) {
+    if (!selectedLoan || !phoneNumber.trim() || !user) {
       alert('Please select a loan package and provide your phone number');
       return;
     }
 
     try {
-      const response = await fetch('/api/loans/request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: selectedLoan.amount,
-          interestRate: selectedLoan.interestRate,
-          totalRepayment: selectedLoan.totalRepayment,
-          borrowerPhone: phoneNumber,
-        }),
+      const { submitLoanRequest } = await import('@/lib/loanService');
+      await submitLoanRequest({
+        borrowerId: user.uid,
+        borrowerName: user.displayName,
+        borrowerEmail: user.email,
+        borrowerPhone: phoneNumber,
+        amount: selectedLoan.amount,
+        interestRate: selectedLoan.interestRate,
+        totalRepayment: selectedLoan.totalRepayment,
       });
 
-      if (response.ok) {
-        alert('Loan request submitted successfully!');
-        setShowRequestForm(false);
-        setSelectedLoan(null);
-        loadLoans();
-      } else {
-        alert('Failed to submit loan request');
-      }
+      alert('Loan request submitted successfully!');
+      setShowRequestForm(false);
+      setSelectedLoan(null);
+      loadLoans();
     } catch (error) {
       console.error('Error submitting loan request:', error);
       alert('An error occurred. Please try again.');

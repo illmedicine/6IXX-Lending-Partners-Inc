@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { COLLATERAL_OPTIONS, CollateralType } from '@/types';
 

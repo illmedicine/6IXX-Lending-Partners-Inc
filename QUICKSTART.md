@@ -1,8 +1,129 @@
-# Quick Start Guide
+# Quick Start Guide - GitHub Pages Deployment
 
-## 🚀 Getting Started in 5 Minutes
+## 🚀 Deploy to GitHub Pages in 5 Steps
 
 ### Step 1: Install Dependencies
+```bash
+npm install
+```
+
+### Step 2: Set Up Firebase
+
+1. Visit https://console.firebase.google.com/
+2. Create a new project named "6ixx-lending"
+3. Click "Add app" → Web app (</>) 
+4. Copy the Firebase configuration
+
+### Step 3: Configure Environment
+
+Create `.env` file in the root:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your Firebase config:
+```env
+VITE_FIREBASE_API_KEY=your_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_domain_here
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_bucket_here
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+### Step 4: Enable Firebase Services
+
+1. **Authentication**:
+   - Firebase Console → Authentication → Get Started
+   - Enable "Google" sign-in method
+   - Add `[username].github.io` to authorized domains
+
+2. **Firestore Database**:
+   - Firebase Console → Firestore Database
+   - Create database in "Test mode"
+   - Choose a location
+
+### Step 5: Deploy!
+
+```bash
+npm run deploy
+```
+
+🎉 Your app is live at: `https://[username].github.io/6IXX-Lending-Partners-Inc/`
+
+## 📱 Test Locally First
+
+Before deploying:
+
+```bash
+npm run dev
+```
+
+Visit http://localhost:5173 and test:
+- ✅ Google sign-in works
+- ✅ Can create loan requests
+- ✅ Dashboards load
+- ✅ Messaging works
+
+## 🔧 Enable GitHub Pages
+
+1. Go to your repo on GitHub
+2. Settings → Pages
+3. Source: `gh-pages` branch
+4. Save
+
+## 📧 Optional: SMS Notifications
+
+To enable SMS to lender (17245587342):
+
+1. Set up Firebase Cloud Functions:
+   ```bash
+   cd functions
+   npm install
+   firebase init functions
+   ```
+
+2. Deploy functions:
+   ```bash
+   firebase deploy --only functions
+   ```
+
+See `functions/README.md` for details.
+
+## 🐛 Troubleshooting
+
+### Build Errors
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+### Firebase Not Loading
+- Check `.env` file exists and has correct values
+- Restart dev server after changing `.env`
+
+### Deploy Fails
+```bash
+npm install -g gh-pages
+npm run deploy
+```
+
+## 🎨 Customization
+
+### Change Loan Amounts/Rates
+Edit `src/types/index.ts` → `LOAN_PACKAGES`
+
+### Change Colors
+Edit `tailwind.config.js` → `theme.extend.colors`
+
+### Change Lender Phone
+Edit `functions/src/index.ts` → `lenderPhone` default
+
+---
+
+**Next**: See [README.md](README.md) for full documentation!
 ```bash
 npm install
 ```

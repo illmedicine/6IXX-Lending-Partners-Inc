@@ -1,8 +1,5 @@
-'use client';
-
 import { useState } from 'react';
 import { LOAN_PACKAGES, calculateTotalRepayment } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface LoanPackageSelectorProps {
   onSelectPackage: (amount: number, interestRate: number, totalRepayment: number) => void;

@@ -1,11 +1,9 @@
-'use client';
+import { useAuth } from './contexts/AuthContext';
+import LoginPage from './components/LoginPage';
+import BorrowerDashboard from './components/BorrowerDashboard';
+import LenderDashboard from './components/LenderDashboard';
 
-import { useAuth } from '@/contexts/AuthContext';
-import LoginPage from '@/components/LoginPage';
-import BorrowerDashboard from '@/components/BorrowerDashboard';
-import LenderDashboard from '@/components/LenderDashboard';
-
-export default function Home() {
+function App() {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -39,3 +37,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default App;

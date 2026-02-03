@@ -6,12 +6,9 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -31,4 +28,14 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+
+# Vite
+dist-ssr
+*.local
+
+# Firebase
+.firebase
+.firebaserc
+firebase-debug.log*
+functions/lib
+functions/node_modules

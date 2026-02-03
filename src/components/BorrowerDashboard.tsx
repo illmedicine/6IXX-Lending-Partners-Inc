@@ -46,13 +46,13 @@ export default function BorrowerDashboard() {
     }
   };
 
-  const handleSubmitLoanRequest = async () => {
+  const handleSubmitLoanRequest = async (skipDisclosure = false) => {
     if (!selectedLoan || !phoneNumber.trim() || !user) {
       alert('Please select a loan package and provide your phone number');
       return;
     }
 
-    if (!disclosureAccepted) {
+    if (!skipDisclosure && !disclosureAccepted) {
       setShowDisclosure(true);
       return;
     }
@@ -90,7 +90,7 @@ export default function BorrowerDashboard() {
     setDisclosureAccepted(true);
     setShowDisclosure(false);
     // Automatically proceed with submission after acceptance
-    setTimeout(() => handleSubmitLoanRequest(), 100);
+    setTimeout(() => handleSubmitLoanRequest(true), 100);
   };
 
   const handleSubmitCollateral = async (collateralType: any, details: string) => {

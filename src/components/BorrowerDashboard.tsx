@@ -266,7 +266,10 @@ export default function BorrowerDashboard() {
                 </div>
 
                 <button
-                  onClick={() => handleSubmitLoanRequest()}
+                  onClick={() => {
+                    console.log('Button clicked!');
+                    handleSubmitLoanRequest();
+                  }}
                   className="w-full py-3 px-6 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 >
                   Submit Loan Request

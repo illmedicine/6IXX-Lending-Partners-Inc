@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 
 const backgroundImages = [
-  'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1920&q=80', // Luxury car
-  'https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?w=1920&q=80', // Cash money
-  'https://images.unsplash.com/photo-1580894894513-541e068a3e2b?w=1920&q=80', // Yacht lifestyle
-  'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=1920&q=80', // Luxury watch
-  'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1920&q=80', // Mansion/luxury home
-  'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=1920&q=80', // Designer shopping
+  'https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=1920&q=80', // Cadillac Escalade luxury SUV
+  'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?w=1920&q=80', // Luxury Cadillac sedan front view
+  'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1920&q=80', // Black luxury Cadillac
+  'https://images.unsplash.com/photo-1631295868223-63265b40d9e4?w=1920&q=80', // Luxury car interior leather seats
+  'https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=1920&q=80', // Person holding cash money
+  'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=1920&q=80', // White Cadillac luxury vehicle
+  'https://images.unsplash.com/photo-1607863680198-23d4b2565df0?w=1920&q=80', // Cash dollars bills
+  'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1920&q=80', // Modern luxury car showroom
+  'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=1920&q=80', // Happy person with money
 ];
 
 export default function BackgroundSlider() {

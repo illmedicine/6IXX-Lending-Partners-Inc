@@ -196,9 +196,15 @@ export default function LenderDashboard() {
           ) : (
             <div className="space-y-4">
               {filteredLoans.map((loan) => (
-                <div key={loan.id} className="bg-white rounded-xl shadow-lg p-6">
+                <div key={loan.id} className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
                   <div className="flex justify-between items-start mb-4">
-                    <div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-xs font-mono bg-purple-50 text-purple-700 px-3 py-1 rounded-full border border-purple-200">
+                          LOAN-{loan.id.substring(0, 8).toUpperCase()}
+                        </span>
+                        {getStatusBadge(loan.status)}
+                      </div>
                       <div className="text-2xl font-bold text-gray-900">
                         ${loan.amount.toLocaleString()}
                       </div>
@@ -206,7 +212,6 @@ export default function LenderDashboard() {
                         {loan.borrowerName} • {loan.borrowerPhone}
                       </div>
                     </div>
-                    {getStatusBadge(loan.status)}
                   </div>
 
                   <div className="border-t border-gray-200 pt-4 space-y-2 mb-4">

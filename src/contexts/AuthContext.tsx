@@ -53,6 +53,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signInWithGoogle = async (role: UserRole) => {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
     
     try {
       const result = await signInWithPopup(auth, provider);
@@ -73,11 +76,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         await createUser(newUser);
         userData = await getUserByUid(firebaseUser.uid);
+      } else if (userData.role !== role) {
+        // Update role if user selected a different one
+        await updateUser(firebaseUser.uid, { role });
+        userData = { ...userData, role };
       }
       
       setUser(userData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing in with Google:', error);
+      if (error.code === 'auth/popup-blocked') {
+        alert('Popup was blocked. Please allow popups for this site and try again.');
+      } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+        // User closed popup, don't show error
+        return;
+      }
       throw error;
     }
   };

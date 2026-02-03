@@ -13,9 +13,12 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithGoogle(selectedRole);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      alert('Failed to sign in. Please try again.');
+      if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+        const errorMessage = error.message || 'Failed to sign in. Please try again.';
+        alert(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

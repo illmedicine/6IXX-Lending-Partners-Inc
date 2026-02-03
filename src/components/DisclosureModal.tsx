@@ -5,9 +5,23 @@ interface DisclosureModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: () => void;
+  loanAmount?: number;
+  interestRate?: number;
+  apr?: number;
+  termDays?: number;
+  totalRepayment?: number;
 }
 
-export default function DisclosureModal({ isOpen, onClose, onAccept }: DisclosureModalProps) {
+export default function DisclosureModal({ 
+  isOpen, 
+  onClose, 
+  onAccept, 
+  loanAmount, 
+  interestRate, 
+  apr, 
+  termDays, 
+  totalRepayment 
+}: DisclosureModalProps) {
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [checkbox1, setCheckbox1] = useState(false);
   const [checkbox2, setCheckbox2] = useState(false);
@@ -45,6 +59,39 @@ export default function DisclosureModal({ isOpen, onClose, onAccept }: Disclosur
             <X className="w-6 h-6" />
           </button>
         </div>
+
+        {/* Loan Terms Summary */}
+        {loanAmount && interestRate && apr && termDays && totalRepayment && (
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-b-2 border-blue-200 p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-3">Your Loan Terms</h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+              <div>
+                <div className="text-gray-600 mb-1">Loan Amount</div>
+                <div className="font-bold text-gray-900">${loanAmount.toFixed(2)}</div>
+              </div>
+              <div>
+                <div className="text-gray-600 mb-1">Term</div>
+                <div className="font-bold text-blue-600">{termDays} days</div>
+              </div>
+              <div>
+                <div className="text-gray-600 mb-1">Interest Rate</div>
+                <div className={`font-bold ${
+                  interestRate <= 10 ? 'text-green-600' :
+                  interestRate <= 20 ? 'text-blue-600' :
+                  interestRate <= 30 ? 'text-orange-600' : 'text-red-600'
+                }`}>{interestRate.toFixed(2)}%</div>
+              </div>
+              <div>
+                <div className="text-gray-600 mb-1">APR</div>
+                <div className="font-bold text-purple-600">{apr.toFixed(2)}%</div>
+              </div>
+              <div>
+                <div className="text-gray-600 mb-1">Total Repayment</div>
+                <div className="font-bold text-blue-600">${totalRepayment.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Content */}
         <div

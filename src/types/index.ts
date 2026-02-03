@@ -80,3 +80,35 @@ export const COLLATERAL_OPTIONS: CollateralType[] = [
 export function calculateTotalRepayment(amount: number, interestRate: number): number {
   return amount + (amount * interestRate / 100);
 }
+
+// Calculate interest rate based on loan term (in days)
+export function calculateInterestRate(termDays: number, baseAmount: number): number {
+  // 1-3 days: 5% minimum
+  if (termDays <= 3) return 5;
+  
+  // 3-14 days: Scale from 5% to default rates based on amount
+  if (termDays <= 14) {
+    const defaultRate = baseAmount >= 5000 ? 10 : 
+                       baseAmount >= 2000 ? 12 : 
+                       baseAmount >= 1000 ? 14 : 
+                       baseAmount >= 500 ? 16 : 
+                       baseAmount >= 250 ? 18 : 20;
+    const progress = (termDays - 3) / (14 - 3);
+    return 5 + (defaultRate - 5) * progress;
+  }
+  
+  // 14-90 days: Scale from default to 40%
+  const defaultRate = baseAmount >= 5000 ? 10 : 
+                     baseAmount >= 2000 ? 12 : 
+                     baseAmount >= 1000 ? 14 : 
+                     baseAmount >= 500 ? 16 : 
+                     baseAmount >= 250 ? 18 : 20;
+  const progress = (termDays - 14) / (90 - 14);
+  return defaultRate + (40 - defaultRate) * progress;
+}
+
+// Calculate APR from interest rate and term
+export function calculateAPR(interestRate: number, termDays: number): number {
+  // APR = (Interest Rate / Term in Days) * 365
+  return (interestRate / termDays) * 365;
+}

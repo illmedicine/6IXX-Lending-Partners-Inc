@@ -211,10 +211,27 @@ export default function LenderDashboard() {
                       <div className="text-sm text-gray-600">
                         {loan.borrowerName} • {loan.borrowerPhone}
                       </div>
+                      <div className="mt-1 text-sm space-x-2">
+                        <span className={`font-semibold ${
+                          loan.interestRate <= 10 ? 'text-green-600' :
+                          loan.interestRate <= 20 ? 'text-blue-600' :
+                          loan.interestRate <= 30 ? 'text-orange-600' : 'text-red-600'
+                        }`}>
+                          {loan.interestRate}% interest
+                        </span>
+                        <span className="text-gray-400">•</span>
+                        <span className="font-medium text-blue-600">
+                          {loan.term} day{loan.term !== 1 ? 's' : ''}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
                   <div className="border-t border-gray-200 pt-4 space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Loan Term:</span>
+                      <span className="font-semibold">{loan.term} day{loan.term !== 1 ? 's' : ''}</span>
+                    </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Interest Rate:</span>
                       <span className="font-semibold">{loan.interestRate}%</span>

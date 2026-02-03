@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { LoanRequest } from '@/types';
+import { LoanRequest, calculateInterestRate, calculateAPR, calculateTotalRepayment } from '@/types';
 import { getLoansByBorrower, submitCollateral } from '@/lib/firestore';
 import LoanPackageSelector from '@/components/LoanPackageSelector';
 import CollateralSelector from '@/components/CollateralSelector';
@@ -15,6 +15,7 @@ export default function BorrowerDashboard() {
   const [showDisclosure, setShowDisclosure] = useState(false);
   const [disclosureAccepted, setDisclosureAccepted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || '');
+  const [loanTermDays, setLoanTermDays] = useState(14); // Default 14 days
   const [selectedLoan, setSelectedLoan] = useState<{
     amount: number;
     interestRate: number;
@@ -68,6 +69,7 @@ export default function BorrowerDashboard() {
         amount: selectedLoan.amount,
         interestRate: selectedLoan.interestRate,
         totalRepayment: selectedLoan.totalRepayment,
+        term: loanTermDays,
       });
 
       console.log('Loan request created with ID:', loanId);
@@ -144,12 +146,103 @@ export default function BorrowerDashboard() {
 
             <LoanPackageSelector
               onSelectPackage={(amount, interestRate, totalRepayment) => {
-                setSelectedLoan({ amount, interestRate, totalRepayment });
+                const newInterestRate = calculateInterestRate(loanTermDays, amount);
+                const newTotalRepayment = calculateTotalRepayment(amount, newInterestRate);
+                setSelectedLoan({ amount, interestRate: newInterestRate, totalRepayment: newTotalRepayment });
               }}
             />
 
             {selectedLoan && (
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 space-y-6">
+                {/* Loan Term Slider */}
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-200">
+                  <label className="block text-sm font-bold text-gray-900 mb-3">
+                    Loan Repayment Term
+                  </label>
+                  
+                  <div className="space-y-4">
+                    <input
+                      type="range"
+                      min="1"
+                      max="90"
+                      value={loanTermDays}
+                      onChange={(e) => {
+                        const newTerm = parseInt(e.target.value);
+                        setLoanTermDays(newTerm);
+                        const newInterestRate = calculateInterestRate(newTerm, selectedLoan.amount);
+                        const newTotalRepayment = calculateTotalRepayment(selectedLoan.amount, newInterestRate);
+                        setSelectedLoan({
+                          ...selectedLoan,
+                          interestRate: newInterestRate,
+                          totalRepayment: newTotalRepayment
+                        });
+                      }}
+                      className="w-full h-3 bg-gradient-to-r from-green-400 via-blue-400 to-red-400 rounded-lg appearance-none cursor-pointer slider"
+                      style={{
+                        background: `linear-gradient(to right, #10b981 0%, #3b82f6 ${(14/90)*100}%, #ef4444 100%)`
+                      }}
+                    />
+                    
+                    <div className="flex justify-between text-xs text-gray-600 font-medium">
+                      <span>1 day</span>
+                      <span className="text-blue-600 font-bold">14 days (Default)</span>
+                      <span>90 days (3 months)</span>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-gray-900">
+                        {loanTermDays} day{loanTermDays !== 1 ? 's' : ''}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        {loanTermDays <= 3 && '⚡ Express Repayment - Lowest Rate!'}
+                        {loanTermDays > 3 && loanTermDays <= 14 && '✓ Standard Term'}
+                        {loanTermDays > 14 && loanTermDays <= 30 && '📅 Extended Term'}
+                        {loanTermDays > 30 && '📆 Long-Term Financing'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Loan Summary Card */}
+                <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Loan Summary</h3>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center pb-3 border-b">
+                      <span className="text-gray-600">Loan Amount:</span>
+                      <span className="text-xl font-bold text-gray-900">${selectedLoan.amount.toFixed(2)}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pb-3 border-b">
+                      <span className="text-gray-600">Repayment Term:</span>
+                      <span className="text-lg font-semibold text-blue-600">{loanTermDays} days</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pb-3 border-b">
+                      <span className="text-gray-600">Interest Rate:</span>
+                      <span className={`text-lg font-semibold ${
+                        selectedLoan.interestRate <= 10 ? 'text-green-600' :
+                        selectedLoan.interestRate <= 20 ? 'text-blue-600' :
+                        selectedLoan.interestRate <= 30 ? 'text-orange-600' : 'text-red-600'
+                      }`}>
+                        {selectedLoan.interestRate.toFixed(2)}%
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pb-3 border-b">
+                      <span className="text-gray-600">APR (Annual):</span>
+                      <span className="text-lg font-semibold text-purple-600">
+                        {calculateAPR(selectedLoan.interestRate, loanTermDays).toFixed(2)}%
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pt-2 bg-gradient-to-r from-blue-50 to-purple-50 -mx-6 px-6 py-4 mt-4 rounded-b-xl">
+                      <span className="text-lg font-bold text-gray-900">Total Repayment:</span>
+                      <span className="text-2xl font-bold text-blue-600">${selectedLoan.totalRepayment.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Your Phone Number
@@ -235,8 +328,18 @@ export default function BorrowerDashboard() {
                       <div className="text-2xl font-bold text-gray-900">
                         ${loan.amount.toLocaleString()}
                       </div>
-                      <div className="text-sm text-gray-600">
-                        {loan.interestRate}% interest • 14 days
+                      <div className="text-sm text-gray-600 space-x-2">
+                        <span className={`font-semibold ${
+                          loan.interestRate <= 10 ? 'text-green-600' :
+                          loan.interestRate <= 20 ? 'text-blue-600' :
+                          loan.interestRate <= 30 ? 'text-orange-600' : 'text-red-600'
+                        }`}>
+                          {loan.interestRate}% interest
+                        </span>
+                        <span>•</span>
+                        <span className="font-medium text-blue-600">
+                          {loan.term} day{loan.term !== 1 ? 's' : ''}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -245,6 +348,10 @@ export default function BorrowerDashboard() {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Total Repayment:</span>
                       <span className="font-semibold">${loan.totalRepayment.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Loan Term:</span>
+                      <span className="font-semibold">{loan.term} day{loan.term !== 1 ? 's' : ''}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Requested:</span>
@@ -293,6 +400,11 @@ export default function BorrowerDashboard() {
         isOpen={showDisclosure}
         onClose={() => setShowDisclosure(false)}
         onAccept={handleDisclosureAccept}
+        loanAmount={selectedLoan?.amount}
+        interestRate={selectedLoan?.interestRate}
+        apr={selectedLoan ? calculateAPR(selectedLoan.interestRate, loanTermDays) : undefined}
+        termDays={loanTermDays}
+        totalRepayment={selectedLoan?.totalRepayment}
       />
     </div>
   );

@@ -10,6 +10,7 @@ export interface LoanRequestData {
   amount: number;
   interestRate: number;
   totalRepayment: number;
+  term: number;
 }
 
 export async function submitLoanRequest(data: LoanRequestData): Promise<string> {
@@ -17,7 +18,6 @@ export async function submitLoanRequest(data: LoanRequestData): Promise<string> 
     // Create loan in Firestore
     const loanId = await createLoanRequest({
       ...data,
-      term: 14,
       status: 'pending',
     });
 

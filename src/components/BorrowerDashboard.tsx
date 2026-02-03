@@ -145,7 +145,7 @@ export default function BorrowerDashboard() {
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Request a Loan</h1>
 
             <LoanPackageSelector
-              onSelectPackage={(amount, interestRate, totalRepayment) => {
+              onSelectPackage={(amount) => {
                 const newInterestRate = calculateInterestRate(loanTermDays, amount);
                 const newTotalRepayment = calculateTotalRepayment(amount, newInterestRate);
                 setSelectedLoan({ amount, interestRate: newInterestRate, totalRepayment: newTotalRepayment });

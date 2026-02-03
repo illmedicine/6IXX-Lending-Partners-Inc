@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
+import BackgroundSlider from '@/components/BackgroundSlider';
+import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const { signInWithGoogle } = useAuth();
@@ -25,37 +27,43 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      <BackgroundSlider />
+      
+      <div className="relative z-10 bg-black/40 backdrop-blur-xl rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <div className="flex justify-center mb-4">
+            <Logo className="w-24 h-24" />
+          </div>
+          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
             6IXX Lending Partners
           </h1>
-          <p className="text-gray-600">Fast loans from $100 to $5,000</p>
+          <p className="text-gray-200 text-lg font-medium">Fast Cash • $100 to $5,000</p>
+          <p className="text-gray-300 text-sm mt-1">Luxury Lifestyle Financing</p>
         </div>
 
         <div className="space-y-4 mb-8">
           <div className="text-center mb-4">
-            <p className="text-sm font-medium text-gray-700">I am a:</p>
+            <p className="text-sm font-medium text-gray-200">I am a:</p>
           </div>
 
           <button
             onClick={() => setSelectedRole('borrower')}
-            className={`w-full py-4 px-6 rounded-lg border-2 transition-all ${
+            className={`w-full py-4 px-6 rounded-xl border-2 transition-all transform hover:scale-105 ${
               selectedRole === 'borrower'
-                ? 'border-blue-600 bg-blue-50 shadow-md'
-                : 'border-gray-200 hover:border-blue-300'
+                ? 'border-blue-500 bg-blue-500/30 shadow-lg shadow-blue-500/50 backdrop-blur-sm'
+                : 'border-white/30 bg-white/10 backdrop-blur-sm hover:border-blue-400 hover:bg-white/20'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="text-left">
-                <div className="font-semibold text-gray-900">Borrower</div>
-                <div className="text-sm text-gray-600">Request a loan</div>
+                <div className="font-semibold text-white text-lg">Borrower</div>
+                <div className="text-sm text-gray-200">Get cash fast</div>
               </div>
               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                 selectedRole === 'borrower'
-                  ? 'border-blue-600 bg-blue-600'
-                  : 'border-gray-300'
+                  ? 'border-blue-400 bg-blue-500'
+                  : 'border-white/50'
               }`}>
                 {selectedRole === 'borrower' && (
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -68,21 +76,21 @@ export default function LoginPage() {
 
           <button
             onClick={() => setSelectedRole('lender')}
-            className={`w-full py-4 px-6 rounded-lg border-2 transition-all ${
+            className={`w-full py-4 px-6 rounded-xl border-2 transition-all transform hover:scale-105 ${
               selectedRole === 'lender'
-                ? 'border-purple-600 bg-purple-50 shadow-md'
-                : 'border-gray-200 hover:border-purple-300'
+                ? 'border-purple-500 bg-purple-500/30 shadow-lg shadow-purple-500/50 backdrop-blur-sm'
+                : 'border-white/30 bg-white/10 backdrop-blur-sm hover:border-purple-400 hover:bg-white/20'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="text-left">
-                <div className="font-semibold text-gray-900">Lender</div>
-                <div className="text-sm text-gray-600">Review loan requests</div>
+                <div className="font-semibold text-white text-lg">Lender</div>
+                <div className="text-sm text-gray-200">Review requests</div>
               </div>
               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                 selectedRole === 'lender'
-                  ? 'border-purple-600 bg-purple-600'
-                  : 'border-gray-300'
+                  ? 'border-purple-400 bg-purple-500'
+                  : 'border-white/50'
               }`}>
                 {selectedRole === 'lender' && (
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -97,10 +105,10 @@ export default function LoginPage() {
         <button
           onClick={handleSignIn}
           disabled={!selectedRole || loading}
-          className={`w-full py-3 px-6 rounded-lg font-medium transition-all ${
+          className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all transform hover:scale-105 ${
             selectedRole && !loading
-              ? 'bg-gray-900 text-white hover:bg-gray-800 shadow-lg'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black shadow-lg shadow-yellow-500/50 hover:shadow-yellow-500/70'
+              : 'bg-gray-600 text-gray-400 cursor-not-allowed'
           }`}
         >
           {loading ? (
@@ -124,7 +132,7 @@ export default function LoginPage() {
           )}
         </button>
 
-        <p className="text-xs text-gray-500 text-center mt-6">
+        <p className="text-xs text-gray-300 text-center mt-6">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
       </div>

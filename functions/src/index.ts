@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+﻿import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {google} from "googleapis";
 
@@ -41,15 +41,15 @@ export const sendLoanNotification = functions.https.onCall(
 
       // Create SMS message
       const smsMessage = `
-🔔 New Loan Request #${loanId}
+ðŸ”” New Loan Request #${loanId}
 
-💰 Amount: $${amount.toLocaleString()}
-📈 Interest: ${interestRate}%
-💵 Repayment: $${totalRepayment.toLocaleString()}
+ðŸ’° Amount: $${amount.toLocaleString()}
+ðŸ“ˆ Interest: ${interestRate}%
+ðŸ’µ Repayment: $${totalRepayment.toLocaleString()}
 
-👤 Borrower: ${borrowerName}
-📞 Contact: ${borrowerPhone}
-📧 Email: ${borrowerEmail}
+ðŸ‘¤ Borrower: ${borrowerName}
+ðŸ“ž Contact: ${borrowerPhone}
+ðŸ“§ Email: ${borrowerEmail}
 
 Review the request in your dashboard.
       `.trim();
@@ -92,7 +92,8 @@ Review the request in your dashboard.
           const event = await calendar.events.insert({
             calendarId: config.google.calendar_id,
             requestBody: {
-              summary: `Loan Request: $${amount.toLocaleString()} from ${borrowerName}`,
+              summary: `Loan Request: $${amount.toLocaleString()} ` +
+                `from ${borrowerName}`,
               description: `
 Loan Request Details:
 - Amount: $${amount.toLocaleString()}

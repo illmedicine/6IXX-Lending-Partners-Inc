@@ -1,6 +1,6 @@
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import { google } from 'googleapis';
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import {google} from "googleapis";
 
 admin.initializeApp();
 
@@ -19,8 +19,8 @@ export const sendLoanNotification = functions.https.onCall(
     // Verify authentication
     if (!context.auth) {
       throw new functions.https.HttpsError(
-        'unauthenticated',
-        'Must be authenticated to send notifications'
+        "unauthenticated",
+        "Must be authenticated to send notifications"
       );
     }
 
@@ -37,7 +37,7 @@ export const sendLoanNotification = functions.https.onCall(
 
       // Get configuration
       const config = functions.config();
-      const lenderPhone = config.lender?.phone_number || '+17245587342';
+      const lenderPhone = config.lender?.phone_number || "+17245587342";
 
       // Create SMS message
       const smsMessage = `
@@ -56,7 +56,8 @@ Review the request in your dashboard.
 
       // Send SMS via Twilio (if configured)
       if (config.twilio?.account_sid) {
-        const twilio = require('twilio');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const twilio = require("twilio");
         const client = twilio(
           config.twilio.account_sid,
           config.twilio.auth_token
@@ -68,8 +69,8 @@ Review the request in your dashboard.
           to: lenderPhone,
         });
       } else {
-        console.log('Twilio not configured. SMS not sent.');
-        console.log('Message would have been:', smsMessage);
+        console.log("Twilio not configured. SMS not sent.");
+        console.log("Message would have been:", smsMessage);
       }
 
       // Create Google Calendar event (if configured)
@@ -79,12 +80,12 @@ Review the request in your dashboard.
           const auth = new google.auth.GoogleAuth({
             credentials: {
               client_email: config.google.service_email,
-              private_key: config.google.private_key.replace(/\\n/g, '\n'),
+              private_key: config.google.private_key.replace(/\\n/g, "\n"),
             },
-            scopes: ['https://www.googleapis.com/auth/calendar'],
+            scopes: ["https://www.googleapis.com/auth/calendar"],
           });
 
-          const calendar = google.calendar({ version: 'v3', auth });
+          const calendar = google.calendar({version: "v3", auth});
           const startTime = new Date();
           const endTime = new Date(startTime.getTime() + 30 * 60000);
 
@@ -108,32 +109,32 @@ Loan ID: ${loanId}
               `.trim(),
               start: {
                 dateTime: startTime.toISOString(),
-                timeZone: 'America/New_York',
+                timeZone: "America/New_York",
               },
               end: {
                 dateTime: endTime.toISOString(),
-                timeZone: 'America/New_York',
+                timeZone: "America/New_York",
               },
             },
           });
 
           calendarEventId = event.data.id;
         } catch (calendarError) {
-          console.error('Calendar event creation failed:', calendarError);
+          console.error("Calendar event creation failed:", calendarError);
           // Don't fail the whole function if calendar fails
         }
       }
 
       return {
         success: true,
-        message: 'Notification sent successfully',
+        message: "Notification sent successfully",
         calendarEventId,
       };
     } catch (error) {
-      console.error('Error sending notification:', error);
+      console.error("Error sending notification:", error);
       throw new functions.https.HttpsError(
-        'internal',
-        'Failed to send notification'
+        "internal",
+        "Failed to send notification"
       );
     }
   }

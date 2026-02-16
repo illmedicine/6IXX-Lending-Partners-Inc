@@ -40,3 +40,63 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+/* Slider (range) minimalist styling + notches */
+.slider {
+  outline: none;
+}
+
+/* Track */
+.slider::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 9999px;
+  background: transparent; /* gradient is inline-styled in component */
+}
+.slider::-moz-range-track {
+  height: 12px;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+/* Thumb */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: white;
+  border: 2px solid rgba(59,130,246,0.95); /* blue ring for contrast */
+  box-shadow: 0 2px 6px rgba(16,24,40,0.12);
+  margin-top: -4px; /* center the thumb on the track */
+  transition: transform 120ms cubic-bezier(.2,.8,.2,1), box-shadow 120ms;
+}
+.slider:active::-webkit-slider-thumb,
+.slider:focus::-webkit-slider-thumb {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: white;
+  border: 2px solid rgba(59,130,246,0.95);
+  box-shadow: 0 2px 6px rgba(16,24,40,0.12);
+}
+
+/* Keyboard focus ring for accessibility */
+.slider:focus {
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+  border-radius: 9999px;
+}
+
+/* Small visual notches as pseudo elements for non-JS fallback */
+.slider-notches {
+  position: relative;
+}
+
+.slider-notches::before,
+.slider-notches::after {
+  content: '';
+}

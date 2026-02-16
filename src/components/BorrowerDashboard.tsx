@@ -56,14 +56,23 @@ export default function BorrowerDashboard() {
       disclosureAccepted 
     });
     
-    if (!selectedLoan || !phoneNumber.trim() || !user) {
-      alert('Please select a loan package and provide your phone number');
+    // Require a selected loan and a signed-in user before proceeding to disclosure
+    if (!selectedLoan || !user) {
+      alert('Please select a loan package before submitting');
       return;
     }
 
+    // Show the disclosure (loan terms) first — allow the modal to open even if phone
+    // is empty so users can review terms. Final phone validation occurs after acceptance.
     if (!skipDisclosure && !disclosureAccepted) {
       console.log('Showing disclosure modal');
       setShowDisclosure(true);
+      return;
+    }
+
+    // After disclosure acceptance (or when skipping disclosure), require phone number
+    if (!phoneNumber.trim()) {
+      alert('Please provide your phone number');
       return;
     }
 
@@ -170,6 +179,9 @@ export default function BorrowerDashboard() {
                   </label>
                   
                   <div className="space-y-4">
+                    {/* Keypoints for notches and snapping */}
+                    {/* 1, 14 (default), 30, 90 */}
+                    {/** Slider input **/}
                     <input
                       type="range"
                       min="1"
@@ -186,12 +198,66 @@ export default function BorrowerDashboard() {
                           totalRepayment: newTotalRepayment
                         });
                       }}
+                      onMouseUp={() => {
+                        // snap on mouse release
+                        const keypoints = [1, 14, 30, 90];
+                        const closest = keypoints.reduce((a, b) => Math.abs(b - loanTermDays) < Math.abs(a - loanTermDays) ? b : a);
+                        const threshold = 3; // days within which to snap
+                        if (Math.abs(closest - loanTermDays) <= threshold) {
+                          setLoanTermDays(closest);
+                          const newInterestRate = calculateInterestRate(closest, selectedLoan.amount);
+                          const newTotalRepayment = calculateTotalRepayment(selectedLoan.amount, newInterestRate);
+                          setSelectedLoan({
+                            ...selectedLoan,
+                            interestRate: newInterestRate,
+                            totalRepayment: newTotalRepayment
+                          });
+                        }
+                      }}
+                      onTouchEnd={() => {
+                        const keypoints = [1, 14, 30, 90];
+                        const closest = keypoints.reduce((a, b) => Math.abs(b - loanTermDays) < Math.abs(a - loanTermDays) ? b : a);
+                        const threshold = 3;
+                        if (Math.abs(closest - loanTermDays) <= threshold) {
+                          setLoanTermDays(closest);
+                          const newInterestRate = calculateInterestRate(closest, selectedLoan.amount);
+                          const newTotalRepayment = calculateTotalRepayment(selectedLoan.amount, newInterestRate);
+                          setSelectedLoan({
+                            ...selectedLoan,
+                            interestRate: newInterestRate,
+                            totalRepayment: newTotalRepayment
+                          });
+                        }
+                      }}
                       className="w-full h-3 bg-gradient-to-r from-green-400 via-blue-400 to-red-400 rounded-lg appearance-none cursor-pointer slider"
+                      aria-label="Loan repayment term in days"
                       style={{
                         background: `linear-gradient(to right, #10b981 0%, #3b82f6 ${(14/90)*100}%, #ef4444 100%)`
                       }}
                     />
-                    
+
+                    {/* subtle notches / marks */}
+                    <div className="relative h-6">
+                      {([1, 14, 30, 90] as number[]).map((kp) => {
+                        const left = ((kp - 1) / (90 - 1)) * 100;
+                        const isPrimary = kp === 14;
+                        return (
+                          <div
+                            key={kp}
+                            className={`absolute -bottom-1 transform -translate-x-1/2 flex flex-col items-center`}
+                            style={{ left: `${left}%` }}
+                          >
+                            <div
+                              className={`w-0.5 ${isPrimary ? 'h-5 bg-blue-400' : 'h-3 bg-gray-300'} rounded-sm`}
+                            />
+                            <div className={`text-[10px] mt-1 ${isPrimary ? 'text-blue-600 font-semibold' : 'text-gray-500'}`}>
+                              {kp === 1 ? '1d' : kp === 14 ? '14d' : kp === 30 ? '30d' : '90d'}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
                     <div className="flex justify-between text-xs text-gray-600 font-medium">
                       <span>1 day</span>
                       <span className="text-blue-600 font-bold">14 days (Default)</span>
@@ -278,6 +344,18 @@ export default function BorrowerDashboard() {
             )}
           </div>
         </div>
+
+        {/* Disclosure Modal (inside showRequestForm branch) */}
+        <DisclosureModal
+          isOpen={showDisclosure}
+          onClose={() => setShowDisclosure(false)}
+          onAccept={handleDisclosureAccept}
+          loanAmount={selectedLoan?.amount}
+          interestRate={selectedLoan?.interestRate}
+          apr={selectedLoan ? calculateAPR(selectedLoan.interestRate, loanTermDays) : undefined}
+          termDays={loanTermDays}
+          totalRepayment={selectedLoan?.totalRepayment}
+        />
       </div>
     );
   }
